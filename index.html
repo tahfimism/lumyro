@@ -286,6 +286,23 @@
             color: var(--text-muted);
         }
 
+        #hardware {
+            position: relative;
+        }
+
+        #hardware::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(129, 140, 248, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
@@ -515,7 +532,8 @@
                     style="color: var(--primary);">Nakib Noor</a></p>
             <p style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--text-muted);">Developed as part of the
                 <strong>EEE
-                    Maker Hub Workshop</strong> at <strong>KUET</strong></p>
+                    Maker Hub Workshop</strong> at <strong>KUET</strong>
+            </p>
             <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.6;">Designed for reliability in real-world
                 environments.</p>
         </div>
