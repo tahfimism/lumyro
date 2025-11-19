@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumyro | Gesture Controlled Lamp</title>
+    <meta name="description"
+        content="A contactless interaction lamp powered by ultrasonic sensing. All hand-driven. No switches. No buttons.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+    <style>
+        :root {
+            --bg: #0b0e14;
+            --surface: #151b26;
+            --surface-hover: #1e2636;
+            --primary: #38bdf8;
+            --secondary: #818cf8;
+            --accent: #c084fc;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #2d3748;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            color: #fff;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--secondary);
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(11, 14, 20, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 10rem 0 6rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(56, 189, 248, 0.4);
+            color: #fff;
+        }
+
+        /* Features Grid */
+        .section {
+            padding: 6rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 16px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .card ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .card li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .card li::before {
+            content: '•';
+            color: var(--secondary);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Hardware & Diagram */
+        .hardware-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hardware-list ul {
+            list-style: none;
+        }
+
+        .hardware-list li {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .hardware-list li:last-child {
+            border-bottom: none;
+        }
+
+        .diagram-container {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        /* Code/Tech Specs */
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .spec-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .spec-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .spec-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 4rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hardware-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <div class="logo">Lumyro</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#hardware">Hardware</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="https://github.com/yourusername/lumyro" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Gesture Controlled Lamp</h1>
+            <p>A contactless interaction lamp powered by ultrasonic sensing, adaptive stability locking, and fluid
+                motion algorithms. No switches. No buttons. Just magic.</p>
+            <a href="#hardware" class="btn">Build Your Own</a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section id="features" class="section">
+            <h2 class="section-title">Intelligent Interaction</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Follow Mode</h3>
+                    <p>The lamp continuously adjusts brightness based on hand distance. It feels organic and responsive.
+                    </p>
+                    <ul>
+                        <li>Median-of-three filtering</li>
+                        <li>Exponential Moving Average (EMA)</li>
+                        <li>Uniform LED driving</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Smart Locking</h3>
+                    <p>Hold your hand steady for 800ms to lock the brightness. The system intelligently filters natural
+                        hand tremors.</p>
+                    <ul>
+                        <li>Adaptive stability band</li>
+                        <li>Noise analysis (8-sample window)</li>
+                        <li>Visual & Audio feedback</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Palm-Off Gesture</h3>
+                    <p>A simple, intuitive gesture to shut it down. Bring your hand very close (≤ 2.8cm) and hold.</p>
+                    <ul>
+                        <li>1.2s hold duration</li>
+                        <li>Anti-accidental wake window</li>
+                        <li>Zero-touch shutdown</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Proximity Wake</h3>
+                    <p>The lamp sleeps with one eye open. Wave your hand to wake it up without touching anything.</p>
+                    <ul>
+                        <li>Low-power polling</li>
+                        <li>Distance-based arming</li>
+                        <li>False-positive rejection</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="specs" class="section">
+            <div class="specs-grid">
+                <div class="spec-item">
+                    <span class="spec-value">800ms</span>
+                    <span class="spec-label">Lock Time</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-value">2-20cm</span>
+                    <span class="spec-label">Active Range</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-value">40ms</span>
+                    <span class="spec-label">Sample Rate</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-value">0.18</span>
+                    <span class="spec-label">EMA Alpha</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="hardware" class="section">
+            <h2 class="section-title">Hardware Architecture</h2>
+            <div class="hardware-layout">
+                <div class="hardware-list">
+                    <h3>Components</h3>
+                    <ul>
+                        <li>
+                            <span>Microcontroller</span>
+                            <span style="color: var(--primary)">Arduino Uno / Nano</span>
+                        </li>
+                        <li>
+                            <span>Sensor</span>
+                            <span style="color: var(--primary)">HC-SR04 Ultrasonic</span>
+                        </li>
+                        <li>
+                            <span>Output</span>
+                            <span style="color: var(--primary)">3x PWM LEDs</span>
+                        </li>
+                        <li>
+                            <span>Feedback</span>
+                            <span style="color: var(--primary)">Passive Buzzer</span>
+                        </li>
+                    </ul>
+                    <br>
+                    <h3>Pinout</h3>
+                    <ul>
+                        <li><span>TRIG</span> <span>Pin 8</span></li>
+                        <li><span>ECHO</span> <span>Pin 7</span></li>
+                        <li><span>LEDs</span> <span>Pins 5, 6, 9</span></li>
+                        <li><span>BUZZ</span> <span>Pin 11</span></li>
+                    </ul>
+                </div>
+                <div class="diagram-container">
+                    <div class="mermaid">
+                        graph TD
+                        Arduino[Arduino Uno/Nano]
+
+                        %% Ultrasonic Sensor
+                        HCSR04[HC-SR04 Sonar]
+                        Arduino -- D8 --> HCSR04(Trig)
+                        HCSR04(Echo) -- D7 --> Arduino
+
+                        %% LEDs
+                        LED1((LED 1))
+                        LED2((LED 2))
+                        LED3((LED 3))
+
+                        Arduino -- D5 PWM --> LED1
+                        Arduino -- D6 PWM --> LED2
+                        Arduino -- D9 PWM --> LED3
+
+                        %% Buzzer
+                        Buzzer[Passive Buzzer]
+                        Arduino -- D11 --> Buzzer
+
+                        style Arduino fill:#1e2636,stroke:#38bdf8,stroke-width:2px
+                        style HCSR04 fill:#1e2636,stroke:#818cf8
+                        style LED1 fill:#1e2636,stroke:#c084fc
+                        style LED2 fill:#1e2636,stroke:#c084fc
+                        style LED3 fill:#1e2636,stroke:#c084fc
+                        style Buzzer fill:#1e2636,stroke:#94a3b8
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="section">
+            <h2 class="section-title">Under the Hood</h2>
+            <div class="grid">
+                <div class="card" style="border-color: var(--secondary)">
+                    <h3>1. Signal Processing</h3>
+                    <p>Raw sonar data is noisy. We clean it up using a 3-stage pipeline: Median Filter → Range Clamping
+                        → Exponential Moving Average. This ensures the light doesn't flicker even if your hand shakes.
+                    </p>
+                </div>
+                <div class="card" style="border-color: var(--accent)">
+                    <h3>2. State Machine</h3>
+                    <p>The system moves fluidly between states: <strong>FOLLOW</strong> (Tracking),
+                        <strong>LOCKED</strong> (Fixed Brightness), and <strong>OFF</strong> (Deep Sleep). Transitions
+                        are governed by strict timing windows to prevent accidental triggers.
+                    </p>
+                </div>
+                <div class="card" style="border-color: var(--primary)">
+                    <h3>3. Non-Blocking Audio</h3>
+                    <p>A custom event-driven buzzer engine queues beeps without using <code>delay()</code>, ensuring the
+                        sensor loop never pauses while a sound is playing.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="section">
+            <h2 class="section-title">Future Roadmap</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Sensing & Intelligence</h3>
+                    <p>Enhancing accuracy and adaptability.</p>
+                    <ul>
+                        <li>Machine-learned gesture classification</li>
+                        <li>Auto-calibrated distance bands</li>
+                        <li>Multi-sensor fusion for better accuracy</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Expanded Capabilities</h3>
+                    <p>New ways to interact and connect.</p>
+                    <ul>
+                        <li>RGB fading with gesture</li>
+                        <li>BLE/IoT control integration</li>
+                        <li>Capacitive fallback sensing</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Lumyro Project &copy; 2025. </p>
+            <p style="margin-top: 0.5rem;">Created by <a href="https://github.com/tahfimism" target="_blank"
+                    style="color: var(--primary);">Nakib Noor</a></p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--text-muted);">Developed as part of the
+                <strong>EEE
+                    Maker Hub Workshop</strong> at <strong>KUET</strong></p>
+            <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.6;">Designed for reliability in real-world
+                environments.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
